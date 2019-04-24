@@ -59,10 +59,21 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Location.cs" />
+    <Compile Include="Pokemon.cs" />
+    <Compile Include="PokemonPicture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PokemonPicture.Designer.cs">
+      <DependentUpon>PokemonPicture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Species.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PokemonPicture.resx">
+      <DependentUpon>PokemonPicture.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
