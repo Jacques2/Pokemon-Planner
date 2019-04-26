@@ -59,7 +59,6 @@
             this.Controls.Add(this.PokemonImage);
             this.Name = "PokemonPicture";
             this.Size = new System.Drawing.Size(133, 157);
-            this.Click += new System.EventHandler(this.PokemonPicture_Click);
             ((System.ComponentModel.ISupportInitialize)(this.PokemonImage)).EndInit();
             this.ResumeLayout(false);
 

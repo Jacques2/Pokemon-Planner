@@ -1,6 +1,6 @@
 ﻿namespace Pokemon_Planner
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Required designer variable.
@@ -35,16 +35,19 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.PokemonPicturePanel = new System.Windows.Forms.FlowLayoutPanel();
             this.dataGridViewPokemonTable = new System.Windows.Forms.DataGridView();
-            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.flowLayoutPanelSettings = new System.Windows.Forms.FlowLayoutPanel();
+            this.labelCurrentlySelected = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.colMethod = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colGame = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colChance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCondition = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPokemonTable)).BeginInit();
+            this.flowLayoutPanelSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -75,9 +78,9 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 235F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.listBoxLocations, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.textBox1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.PokemonPicturePanel, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.dataGridViewPokemonTable, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanelSettings, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -99,10 +102,9 @@
             // 
             // textBox1
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox1.Location = new System.Drawing.Point(3, 3);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(229, 20);
+            this.textBox1.Size = new System.Drawing.Size(226, 20);
             this.textBox1.TabIndex = 5;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
@@ -120,7 +122,6 @@
             // 
             this.dataGridViewPokemonTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewPokemonTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colName,
             this.colMethod,
             this.colGame,
             this.colChance,
@@ -131,11 +132,42 @@
             this.dataGridViewPokemonTable.Size = new System.Drawing.Size(800, 408);
             this.dataGridViewPokemonTable.TabIndex = 3;
             // 
-            // colName
+            // tabPage2
             // 
-            this.colName.HeaderText = "Pokemon Name";
-            this.colName.Name = "colName";
-            this.colName.ReadOnly = true;
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1047, 590);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanelSettings
+            // 
+            this.flowLayoutPanelSettings.Controls.Add(this.textBox1);
+            this.flowLayoutPanelSettings.Controls.Add(this.labelCurrentlySelected);
+            this.flowLayoutPanelSettings.Controls.Add(this.progressBar1);
+            this.flowLayoutPanelSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanelSettings.Location = new System.Drawing.Point(3, 3);
+            this.flowLayoutPanelSettings.Name = "flowLayoutPanelSettings";
+            this.flowLayoutPanelSettings.Size = new System.Drawing.Size(229, 164);
+            this.flowLayoutPanelSettings.TabIndex = 7;
+            // 
+            // labelCurrentlySelected
+            // 
+            this.labelCurrentlySelected.AutoSize = true;
+            this.labelCurrentlySelected.Location = new System.Drawing.Point(3, 26);
+            this.labelCurrentlySelected.Name = "labelCurrentlySelected";
+            this.labelCurrentlySelected.Size = new System.Drawing.Size(125, 13);
+            this.labelCurrentlySelected.TabIndex = 6;
+            this.labelCurrentlySelected.Text = "Currently Selected: None";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(3, 42);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(226, 23);
+            this.progressBar1.TabIndex = 7;
             // 
             // colMethod
             // 
@@ -161,30 +193,21 @@
             this.colCondition.Name = "colCondition";
             this.colCondition.ReadOnly = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1047, 590);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // Form1
+            // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1055, 616);
             this.Controls.Add(this.tabControl1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "FormMain";
+            this.Text = "Pokémon Planner";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPokemonTable)).EndInit();
+            this.flowLayoutPanelSettings.ResumeLayout(false);
+            this.flowLayoutPanelSettings.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -198,7 +221,9 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.FlowLayoutPanel PokemonPicturePanel;
         private System.Windows.Forms.DataGridView dataGridViewPokemonTable;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelSettings;
+        private System.Windows.Forms.Label labelCurrentlySelected;
+        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMethod;
         private System.Windows.Forms.DataGridViewTextBoxColumn colGame;
         private System.Windows.Forms.DataGridViewTextBoxColumn colChance;

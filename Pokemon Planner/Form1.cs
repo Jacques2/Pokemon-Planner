@@ -16,14 +16,15 @@ using Newtonsoft.Json;
 
 namespace Pokemon_Planner
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
         public static ArrayList names = new ArrayList();
         static HttpClient client = new HttpClient();
         ArrayList placeUrl = new ArrayList();
         ArrayList placeNames = new ArrayList();
         ArrayList filteredUrl = new ArrayList();
-        public Form1()
+        string currentLocationJson;
+        public FormMain()
         {
             InitializeComponent();
         }
@@ -97,15 +98,19 @@ namespace Pokemon_Planner
 
         public void GetPokemon(string json)
         {
+            progressBar1.Value = 0;
             PokemonPicturePanel.Controls.Clear();
-            List<Tuple<string, string>> pokeInfo = new List<Tuple<string, string>>();//name, url of image
+            List<Tuple<string, string, string>> pokeInfo = new List<Tuple<string, string, string>>();//name, url of image
             List<string> pokeAdded = new List<string>();
             var result = JsonConvert.DeserializeObject<Pokemon_Location.RootObject>(json);
-            for (int poke = 0; poke < result.pokemon_encounters.Count; poke++)
+            int noEncounters = result.pokemon_encounters.Count;
+            progressBar1.Maximum = noEncounters;
+            for (int poke = 0; poke < noEncounters; poke++)
             {
                 if (!pokeAdded.Contains(result.pokemon_encounters.ElementAt(poke).pokemon.name))
                 {
-                    pokeAdded.Add(result.pokemon_encounters.ElementAt(poke).pokemon.name);
+                    string pokeTag = result.pokemon_encounters.ElementAt(poke).pokemon.name;
+                    pokeAdded.Add(pokeTag);
                     string pokeJson = ApiRequest(Convert.ToString(result.pokemon_encounters.ElementAt(poke).pokemon.url));
                     var pokeData = JsonConvert.DeserializeObject<Pokemon_Details.RootObject>(pokeJson);
                     string imageUrl = pokeData.sprites.front_default;
@@ -121,8 +126,9 @@ namespace Pokemon_Planner
                             language = pokeSpeciesData.names.Count;//end for loop 
                         }
                     }
-                    pokeInfo.Add(new Tuple<string, string>(pokeName, imageUrl));
+                    pokeInfo.Add(new Tuple<string, string, string>(pokeName, imageUrl, pokeTag));
                 }
+                progressBar1.Value = poke + 1;
             }
             for (int i = 0; i < pokeInfo.Count; i++)
             {
@@ -130,6 +136,10 @@ namespace Pokemon_Planner
                 PokemonPicturePanel.Controls.Add(pp);
                 pp.SetName(pokeInfo.ElementAt(i).Item1);
                 pp.SetPicture(pokeInfo.ElementAt(i).Item2);
+                pp.SetTag(pokeInfo.ElementAt(i).Item3);
+                pp.Click += new System.EventHandler(this.PokemonPicture_Click);
+                pp.Controls[0].Click += new System.EventHandler(this.PokemonPicture_Click);
+                pp.Controls[1].Click += new System.EventHandler(this.PokemonPicture_Click);
             }
         }
 
@@ -139,6 +149,7 @@ namespace Pokemon_Planner
             string jsonRead = ApiRequest(Convert.ToString(placeUrl[url]));
             if (jsonRead != null)
             {
+                labelCurrentlySelected.Text = "Currently Selected: " + listBoxLocations.SelectedItem;
                 GetPokemon(jsonRead);
             }
         }
@@ -160,6 +171,32 @@ namespace Pokemon_Planner
         private void textBox1_Enter(object sender, EventArgs e)
         {
             textBox1.Text = "";
+        }
+
+        private void PokemonPicture_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < PokemonPicturePanel.Controls.Count; i++)
+            {
+                PokemonPicture pp1 = (PokemonPicture)PokemonPicturePanel.Controls[i];
+                pp1.Deselect();
+            }
+            PokemonPicture pp;
+            if (sender.GetType().ToString() == "System.Windows.Forms.PictureBox")
+            {
+                PictureBox pb = (PictureBox)sender;
+                pp = (PokemonPicture)pb.Parent;
+            }
+            else if (sender.GetType().ToString() == "System.Windows.Forms.Label")
+            {
+                Label pl = (Label)sender;
+                pp = (PokemonPicture)pl.Parent;
+            }
+            else
+            {
+                pp = (PokemonPicture)sender;
+            }
+            string tag = pp.PokemonSelected();
+            progressBar1.Value = 0;
         }
     }
 }
