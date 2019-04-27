@@ -158,6 +158,7 @@ namespace Pokemon_Planner
 
         private void listBoxLocations_SelectedIndexChanged(object sender, EventArgs e)
         {
+            dataGridViewPokemonTable.Rows.Clear();
             int url = Convert.ToInt32(filteredUrl[listBoxLocations.SelectedIndex]);
             string jsonRead = ApiRequest(Convert.ToString(placeUrl[url]));
             currentLocationJson = jsonRead;
@@ -327,6 +328,11 @@ namespace Pokemon_Planner
                     }
                 }
             }
+        }
+
+        private void DataGridViewPokemonTable_SelectionChanged(object sender, EventArgs e)
+        {
+            dataGridViewPokemonTable.ClearSelection();
         }
     }
 }

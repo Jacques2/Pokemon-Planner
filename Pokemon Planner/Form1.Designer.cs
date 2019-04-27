@@ -34,16 +34,16 @@
             this.listBoxLocations = new System.Windows.Forms.ListBox();
             this.flowLayoutPanelPokemon = new System.Windows.Forms.FlowLayoutPanel();
             this.dataGridViewPokemonTable = new System.Windows.Forms.DataGridView();
-            this.flowLayoutPanelSettings = new System.Windows.Forms.FlowLayoutPanel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.labelCurrentlySelected = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.colGame = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMethod = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLevelRange = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colChance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCondition = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.flowLayoutPanelSettings = new System.Windows.Forms.FlowLayoutPanel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.labelCurrentlySelected = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -115,6 +115,11 @@
             // 
             // dataGridViewPokemonTable
             // 
+            this.dataGridViewPokemonTable.AllowUserToAddRows = false;
+            this.dataGridViewPokemonTable.AllowUserToDeleteRows = false;
+            this.dataGridViewPokemonTable.AllowUserToResizeColumns = false;
+            this.dataGridViewPokemonTable.AllowUserToResizeRows = false;
+            this.dataGridViewPokemonTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dataGridViewPokemonTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewPokemonTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colGame,
@@ -123,10 +128,48 @@
             this.colChance,
             this.colCondition});
             this.dataGridViewPokemonTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewPokemonTable.Enabled = false;
             this.dataGridViewPokemonTable.Location = new System.Drawing.Point(238, 173);
             this.dataGridViewPokemonTable.Name = "dataGridViewPokemonTable";
+            this.dataGridViewPokemonTable.ReadOnly = true;
+            this.dataGridViewPokemonTable.RowHeadersVisible = false;
             this.dataGridViewPokemonTable.Size = new System.Drawing.Size(713, 408);
             this.dataGridViewPokemonTable.TabIndex = 3;
+            this.dataGridViewPokemonTable.SelectionChanged += new System.EventHandler(this.DataGridViewPokemonTable_SelectionChanged);
+            // 
+            // colGame
+            // 
+            this.colGame.HeaderText = "Game";
+            this.colGame.Name = "colGame";
+            this.colGame.ReadOnly = true;
+            this.colGame.Width = 60;
+            // 
+            // colMethod
+            // 
+            this.colMethod.HeaderText = "Method";
+            this.colMethod.Name = "colMethod";
+            this.colMethod.ReadOnly = true;
+            this.colMethod.Width = 68;
+            // 
+            // colLevelRange
+            // 
+            this.colLevelRange.HeaderText = "Level Range";
+            this.colLevelRange.Name = "colLevelRange";
+            this.colLevelRange.Width = 93;
+            // 
+            // colChance
+            // 
+            this.colChance.HeaderText = "Chance";
+            this.colChance.Name = "colChance";
+            this.colChance.ReadOnly = true;
+            this.colChance.Width = 69;
+            // 
+            // colCondition
+            // 
+            this.colCondition.HeaderText = "Condition";
+            this.colCondition.Name = "colCondition";
+            this.colCondition.ReadOnly = true;
+            this.colCondition.Width = 76;
             // 
             // flowLayoutPanelSettings
             // 
@@ -148,6 +191,13 @@
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(3, 29);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(226, 23);
+            this.progressBar1.TabIndex = 7;
+            // 
             // labelCurrentlySelected
             // 
             this.labelCurrentlySelected.AutoSize = true;
@@ -157,51 +207,15 @@
             this.labelCurrentlySelected.TabIndex = 6;
             this.labelCurrentlySelected.Text = "Currently Selected: None";
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(3, 29);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(226, 23);
-            this.progressBar1.TabIndex = 7;
-            // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(112, 299);
+            this.tabPage2.Size = new System.Drawing.Size(960, 590);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "?";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // colGame
-            // 
-            this.colGame.HeaderText = "Game";
-            this.colGame.Name = "colGame";
-            this.colGame.ReadOnly = true;
-            // 
-            // colMethod
-            // 
-            this.colMethod.HeaderText = "Method";
-            this.colMethod.Name = "colMethod";
-            this.colMethod.ReadOnly = true;
-            // 
-            // colLevelRange
-            // 
-            this.colLevelRange.HeaderText = "Level Range";
-            this.colLevelRange.Name = "colLevelRange";
-            // 
-            // colChance
-            // 
-            this.colChance.HeaderText = "Chance";
-            this.colChance.Name = "colChance";
-            this.colChance.ReadOnly = true;
-            // 
-            // colCondition
-            // 
-            this.colCondition.HeaderText = "Condition";
-            this.colCondition.Name = "colCondition";
-            this.colCondition.ReadOnly = true;
             // 
             // FormMain
             // 
