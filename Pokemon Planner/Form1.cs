@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Collections;
 using System.IO;
 using Newtonsoft.Json;
@@ -36,8 +30,11 @@ namespace Pokemon_Planner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //writing dll files to base directory
+            File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll", Properties.Resources.Newtonsoft_Json);
+            File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "System.Net.Http.Formatting.dll", Properties.Resources.System_Net_Http_Formatting);
             //Loading list
-            StreamReader sr = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + @"Data\places.csv");
+            StringReader sr = new StringReader(Properties.Resources.places);
             string[] SeperatedLine;
             string lineRead = sr.ReadLine();
             while (lineRead != null)
