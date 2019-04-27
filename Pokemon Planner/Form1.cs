@@ -23,6 +23,9 @@ namespace Pokemon_Planner
         ArrayList placeUrl = new ArrayList();
         ArrayList placeNames = new ArrayList();
         ArrayList filteredUrl = new ArrayList();
+        Dictionary<string, string> pokemonCache = new Dictionary<string, string>();
+        Dictionary<string, string> conditionCache = new Dictionary<string, string>();
+
         string currentLocationJson;
         public FormMain()
         {
@@ -99,8 +102,8 @@ namespace Pokemon_Planner
         public void GetPokemon(string json)
         {
             progressBar1.Value = 0;
-            PokemonPicturePanel.Controls.Clear();
-            List<Tuple<string, string, string>> pokeInfo = new List<Tuple<string, string, string>>();//name, url of image
+            flowLayoutPanelPokemon.Controls.Clear();
+            List<Tuple<string, string, string>> pokeInfo = new List<Tuple<string, string, string>>();//name, url of image, tag
             List<string> pokeAdded = new List<string>();
             var result = JsonConvert.DeserializeObject<Pokemon_Location.RootObject>(json);
             int noEncounters = result.pokemon_encounters.Count;
@@ -115,15 +118,23 @@ namespace Pokemon_Planner
                     var pokeData = JsonConvert.DeserializeObject<Pokemon_Details.RootObject>(pokeJson);
                     string imageUrl = pokeData.sprites.front_default;
 
-                    string pokeNameJson = ApiRequest(pokeData.species.url);
-                    var pokeSpeciesData = JsonConvert.DeserializeObject<Pokemon_Species.RootObject>(pokeNameJson);
                     string pokeName = "";
-                    for (int language = 0; language < pokeSpeciesData.names.Count; language++)
+                    if (pokemonCache.ContainsKey(pokeTag))
                     {
-                        if (pokeSpeciesData.names.ElementAt(language).language.name == "en")
+                        pokeName = pokemonCache[pokeTag];
+                    }
+                    else
+                    {
+                        string pokeNameJson = ApiRequest(pokeData.species.url);
+                        var pokeSpeciesData = JsonConvert.DeserializeObject<Pokemon_Species.RootObject>(pokeNameJson);
+                        for (int language = 0; language < pokeSpeciesData.names.Count; language++)
                         {
-                            pokeName = pokeSpeciesData.names.ElementAt(language).name;
-                            language = pokeSpeciesData.names.Count;//end for loop 
+                            if (pokeSpeciesData.names.ElementAt(language).language.name == "en")
+                            {
+                                pokeName = pokeSpeciesData.names.ElementAt(language).name;
+                                pokemonCache.Add(pokeTag, pokeName);
+                                language = pokeSpeciesData.names.Count;//end for loop 
+                            }
                         }
                     }
                     pokeInfo.Add(new Tuple<string, string, string>(pokeName, imageUrl, pokeTag));
@@ -133,7 +144,7 @@ namespace Pokemon_Planner
             for (int i = 0; i < pokeInfo.Count; i++)
             {
                 PokemonPicture pp = new PokemonPicture();
-                PokemonPicturePanel.Controls.Add(pp);
+                flowLayoutPanelPokemon.Controls.Add(pp);
                 pp.SetName(pokeInfo.ElementAt(i).Item1);
                 pp.SetPicture(pokeInfo.ElementAt(i).Item2);
                 pp.SetTag(pokeInfo.ElementAt(i).Item3);
@@ -147,6 +158,7 @@ namespace Pokemon_Planner
         {
             int url = Convert.ToInt32(filteredUrl[listBoxLocations.SelectedIndex]);
             string jsonRead = ApiRequest(Convert.ToString(placeUrl[url]));
+            currentLocationJson = jsonRead;
             if (jsonRead != null)
             {
                 labelCurrentlySelected.Text = "Currently Selected: " + listBoxLocations.SelectedItem;
@@ -173,11 +185,14 @@ namespace Pokemon_Planner
             textBox1.Text = "";
         }
 
+        //dict     game              method             condition      min   max  chance
+        Dictionary<string, Dictionary<string, Dictionary<string, Tuple<int, int, int>>>> locationData = new Dictionary<string, Dictionary<string, Dictionary<string, Tuple<int, int, int>>>>();
         private void PokemonPicture_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < PokemonPicturePanel.Controls.Count; i++)
+            //deselect all but clicked object
+            for (int i = 0; i < flowLayoutPanelPokemon.Controls.Count; i++)
             {
-                PokemonPicture pp1 = (PokemonPicture)PokemonPicturePanel.Controls[i];
+                PokemonPicture pp1 = (PokemonPicture)flowLayoutPanelPokemon.Controls[i];
                 pp1.Deselect();
             }
             PokemonPicture pp;
@@ -197,6 +212,89 @@ namespace Pokemon_Planner
             }
             string tag = pp.PokemonSelected();
             progressBar1.Value = 0;
+            //get location information
+
+            locationData.Clear();
+            var location = JsonConvert.DeserializeObject<Pokemon_Location.RootObject>(currentLocationJson);
+            var pokemon = from p in location.pokemon_encounters
+                          where p.pokemon.name == tag
+                          select p;
+            foreach (var version in pokemon.ElementAt(0).version_details)
+            {
+                string game = version.version.name;
+                if (!locationData.ContainsKey(game))
+                {
+                    locationData.Add(game, new Dictionary<string, Dictionary<string, Tuple<int, int, int>>>());
+                }
+                foreach (var encounter in version.encounter_details)
+                {
+                    string condition = "none";
+                    if (!locationData[game].ContainsKey(encounter.method.name))
+                    {
+                        locationData[game].Add(encounter.method.name, new Dictionary<string, Tuple<int, int, int>>());
+                    }
+                    if (locationData[game][encounter.method.name].ContainsKey("none") == false && encounter.condition_values.Count == 0)
+                    {
+                        locationData[game][encounter.method.name].Add("none", new Tuple<int, int, int>(100, 0, 0));
+                    }
+                    if (encounter.condition_values.Count > 0)
+                    {
+                        condition = "";
+                        foreach (var conditions in encounter.condition_values)
+                        {
+                            if (conditionCache.ContainsKey(conditions.name))
+                            {
+                                condition += conditionCache[conditions.name];
+                            }
+                            else
+                            {
+                                string conditionJson = ApiRequest(conditions.url);
+                                var conditionData = JsonConvert.DeserializeObject<Pokemon_Condition.RootObject>(conditionJson);
+                                var name = from l in conditionData.names
+                                           where l.language.name == "en"
+                                           select l;
+                                condition += name.ElementAt(0).name;
+                                conditionCache.Add(conditions.name, name.ElementAt(0).name);
+                            }
+                            condition += " - ";
+                        }
+                        condition = condition.Remove(condition.Length - 3, 3);
+                        if (!locationData[game][encounter.method.name].ContainsKey(condition))
+                        {
+                            locationData[game][encounter.method.name].Add(condition, new Tuple<int, int, int>(100, 0, 0));
+                        }
+                    }
+                    int min = locationData[game][encounter.method.name][condition].Item1;
+                    int max = locationData[game][encounter.method.name][condition].Item2;
+                    int chance = locationData[game][encounter.method.name][condition].Item3;
+                    if (encounter.min_level < min)
+                    {
+                        min = encounter.min_level;
+                    }
+                    if (encounter.max_level > max)
+                    {
+                        max = encounter.max_level;
+                    }
+                    chance += encounter.chance;
+                    locationData[game][encounter.method.name][condition] = new Tuple<int, int, int>(min, max, chance);
+                }
+            }
+            dataGridViewPokemonTable.Rows.Clear();
+            foreach (var game in locationData)
+            {
+                foreach (var method in game.Value)
+                {
+                    foreach (var condition in method.Value)
+                    {
+                        string conditionToWrite = condition.Key;
+                        if (conditionToWrite == "none")
+                        {
+                            conditionToWrite = "";
+                        }
+                        dataGridViewPokemonTable.Rows.Add(game.Key, method.Key, method.Value[condition.Key].Item1 + " - " + method.Value[condition.Key].Item2, method.Value[condition.Key].Item3 + "%", conditionToWrite);
+                    }
+                }
+            }
         }
     }
 }

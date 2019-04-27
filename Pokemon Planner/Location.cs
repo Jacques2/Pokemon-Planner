@@ -63,10 +63,16 @@ namespace Pokemon_Location
     public class EncounterDetail
     {
         public int chance { get; set; }
-        public List<object> condition_values { get; set; }
+        public List<ConditionValue> condition_values { get; set; }
         public int max_level { get; set; }
         public Method method { get; set; }
         public int min_level { get; set; }
+    }
+
+    public class ConditionValue
+    {
+        public string name { get; set; }
+        public string url { get; set; }
     }
 
     public class Version2
