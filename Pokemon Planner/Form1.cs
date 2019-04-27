@@ -25,6 +25,8 @@ namespace Pokemon_Planner
         ArrayList filteredUrl = new ArrayList();
         Dictionary<string, string> pokemonCache = new Dictionary<string, string>();
         Dictionary<string, string> conditionCache = new Dictionary<string, string>();
+        Dictionary<string, string> gameCache = new Dictionary<string, string>();
+        Dictionary<string, string> methodCache = new Dictionary<string, string>();
 
         string currentLocationJson;
         public FormMain()
@@ -221,21 +223,51 @@ namespace Pokemon_Planner
                           select p;
             foreach (var version in pokemon.ElementAt(0).version_details)
             {
-                string game = version.version.name;
+                string game;
+                if (gameCache.ContainsKey(version.version.name))
+                {
+                    game = gameCache[version.version.name];
+                }
+                else
+                {
+                    string gameJson = ApiRequest(version.version.url);
+                    var gameData = JsonConvert.DeserializeObject<Pokemon_Game.RootObject>(gameJson);
+                    var theGame = from l in gameData.names
+                                  where l.language.name == "en"
+                                  select l;
+                    game = theGame.ElementAt(0).name;
+                    gameCache.Add(version.version.name, theGame.ElementAt(0).name);
+                }
                 if (!locationData.ContainsKey(game))
                 {
                     locationData.Add(game, new Dictionary<string, Dictionary<string, Tuple<int, int, int>>>());
                 }
+                string methodType;
                 foreach (var encounter in version.encounter_details)
                 {
                     string condition = "none";
-                    if (!locationData[game].ContainsKey(encounter.method.name))
+                    //methodType = encounter.method.name;
+                    if (methodCache.ContainsKey(encounter.method.name))
                     {
-                        locationData[game].Add(encounter.method.name, new Dictionary<string, Tuple<int, int, int>>());
+                        methodType = methodCache[encounter.method.name];
                     }
-                    if (locationData[game][encounter.method.name].ContainsKey("none") == false && encounter.condition_values.Count == 0)
+                    else
                     {
-                        locationData[game][encounter.method.name].Add("none", new Tuple<int, int, int>(100, 0, 0));
+                        string methodJson = ApiRequest(encounter.method.url);
+                        var methodData = JsonConvert.DeserializeObject<Pokemon_Game.RootObject>(methodJson);
+                        var theMethod = from l in methodData.names
+                                      where l.language.name == "en"
+                                      select l;
+                        methodType = theMethod.ElementAt(0).name;
+                        methodCache.Add(encounter.method.name, theMethod.ElementAt(0).name);
+                    }
+                    if (!locationData[game].ContainsKey(methodType))
+                    {
+                        locationData[game].Add(methodType, new Dictionary<string, Tuple<int, int, int>>());
+                    }
+                    if (locationData[game][methodType].ContainsKey("none") == false && encounter.condition_values.Count == 0)
+                    {
+                        locationData[game][methodType].Add("none", new Tuple<int, int, int>(100, 0, 0));
                     }
                     if (encounter.condition_values.Count > 0)
                     {
@@ -259,14 +291,14 @@ namespace Pokemon_Planner
                             condition += " - ";
                         }
                         condition = condition.Remove(condition.Length - 3, 3);
-                        if (!locationData[game][encounter.method.name].ContainsKey(condition))
+                        if (!locationData[game][methodType].ContainsKey(condition))
                         {
-                            locationData[game][encounter.method.name].Add(condition, new Tuple<int, int, int>(100, 0, 0));
+                            locationData[game][methodType].Add(condition, new Tuple<int, int, int>(100, 0, 0));
                         }
                     }
-                    int min = locationData[game][encounter.method.name][condition].Item1;
-                    int max = locationData[game][encounter.method.name][condition].Item2;
-                    int chance = locationData[game][encounter.method.name][condition].Item3;
+                    int min = locationData[game][methodType][condition].Item1;
+                    int max = locationData[game][methodType][condition].Item2;
+                    int chance = locationData[game][methodType][condition].Item3;
                     if (encounter.min_level < min)
                     {
                         min = encounter.min_level;
@@ -276,7 +308,7 @@ namespace Pokemon_Planner
                         max = encounter.max_level;
                     }
                     chance += encounter.chance;
-                    locationData[game][encounter.method.name][condition] = new Tuple<int, int, int>(min, max, chance);
+                    locationData[game][methodType][condition] = new Tuple<int, int, int>(min, max, chance);
                 }
             }
             dataGridViewPokemonTable.Rows.Clear();
