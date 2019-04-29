@@ -21,7 +21,8 @@ namespace Pokemon_Planner
         Dictionary<string, string> conditionCache = new Dictionary<string, string>();
         Dictionary<string, string> gameCache = new Dictionary<string, string>();
         Dictionary<string, string> methodCache = new Dictionary<string, string>();
-
+        Dictionary<string, int> pokedexIndex = new Dictionary<string, int>();
+        HashSet<string> pokedex = new HashSet<string>();
         string currentLocationJson;
         public FormMain()
         {
@@ -33,10 +34,20 @@ namespace Pokemon_Planner
             //writing dll files to base directory
             File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll", Properties.Resources.Newtonsoft_Json);
             File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "System.Net.Http.Formatting.dll", Properties.Resources.System_Net_Http_Formatting);
+            StreamWriter pokedexCreation = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "pokedex.dat", append:true);//creates a dex if it does not exist
+            pokedexCreation.Close();
+            StreamReader pokedexReader = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "pokedex.dat");
+            string lineRead = pokedexReader.ReadLine();
+            while (lineRead != null)
+            {
+                pokedex.Add(lineRead);
+                lineRead = pokedexReader.ReadLine();
+            }
+            pokedexReader.Close();
             //Loading list
             StringReader sr = new StringReader(Properties.Resources.places);
             string[] SeperatedLine;
-            string lineRead = sr.ReadLine();
+            lineRead = sr.ReadLine();
             while (lineRead != null)
             {
                 SeperatedLine = lineRead.Split(new[] { "," }, StringSplitOptions.None);
@@ -49,6 +60,7 @@ namespace Pokemon_Planner
             {
                 filteredUrl.Add(i);
             }
+            LoadAllPokemon();
         }
 
         public string ApiRequest(string path)
@@ -330,6 +342,105 @@ namespace Pokemon_Planner
         private void DataGridViewPokemonTable_SelectionChanged(object sender, EventArgs e)
         {
             dataGridViewPokemonTable.ClearSelection();
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+             
+        }
+
+        private void LoadAllPokemon()//used for initially loading all pokemon
+        {
+            string listJson = ApiRequest("https://pokeapi.co/api/v2/pokedex?limit=100");
+            var pokedexListData = JsonConvert.DeserializeObject<Pokemon_PokedexList.RootObject>(listJson);
+            int index = -1;
+            for (int i = 0; i < pokedexListData.results.Count; i++)
+            {
+                string pokedexJson = ApiRequest(pokedexListData.results.ElementAt(i).url);
+                var pokedexData = JsonConvert.DeserializeObject<Pokemon_Pokedex.RootObject>(pokedexJson);
+                var name = from l in pokedexData.names
+                           where l.language.name == "en"
+                           select l;
+                var tooltip = from l in pokedexData.descriptions
+                           where l.language.name == "en"
+                           select l;
+                if (pokedexData.is_main_series)
+                {
+                    index++;
+                    treeViewPokedex.Nodes.Add(name.ElementAt(0).name);
+                    treeViewPokedex.Nodes[index].ToolTipText = tooltip.ElementAt(0).description;
+                    foreach (var entry in pokedexData.pokemon_entries)
+                    {
+                        int dexId;
+                        if (pokedexIndex.ContainsKey(entry.pokemon_species.name))
+                        {
+                            dexId = pokedexIndex[entry.pokemon_species.name];
+                        }
+                        else if (pokedexData.id == 1)
+                        {
+                            pokedexIndex.Add(entry.pokemon_species.name, entry.entry_number);
+                            dexId = entry.entry_number;
+                        }
+                        else
+                        {
+                            dexId = -1;
+                            MessageBox.Show("Unknown pokemon found: " + entry.pokemon_species.name);
+                        }
+                        treeViewPokedex.Nodes[index].Nodes.Add(Convert.ToString(dexId), entry.pokemon_species.name.First().ToString().ToUpper() + entry.pokemon_species.name.Substring(1));
+                        UpdateNodes();
+                    }
+                }
+            }
+        }
+
+        private void TreeViewPokedex_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+            MessageBox.Show(Convert.ToString(e.Node.Name));
+        }
+
+        private void TreeViewPokedex_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (!e.Node.Checked)
+            {
+                if (pokedex.Contains(e.Node.Name))
+                {
+                    pokedex.Remove(e.Node.Name);
+                }
+            }
+            else
+            {
+                pokedex.Add(e.Node.Name);
+            }
+            UpdateNodes();
+        }
+
+        private void UpdateNodes()
+        {
+            foreach (TreeNode node in treeViewPokedex.Nodes)
+            {
+                foreach (TreeNode child in node.Nodes)
+                {
+                    if (pokedex.Contains(child.Name) && child.Checked == false)
+                    {
+                        child.Checked = true;
+                    }
+                    else if (!pokedex.Contains(child.Name) && child.Checked)
+                    {
+                        child.Checked = false;
+                    }
+                }
+            }
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            StreamWriter pokeWriter = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "pokedex.dat");
+            for (int i = 0; i < pokedex.Count; i++)
+            {
+                pokeWriter.WriteLine(pokedex.ElementAt(i));
+            }
+            pokeWriter.Close();
         }
     }
 }

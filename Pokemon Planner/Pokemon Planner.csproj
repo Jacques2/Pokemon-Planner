@@ -61,6 +61,8 @@
     </Compile>
     <Compile Include="Game.cs" />
     <Compile Include="Location.cs" />
+    <Compile Include="Pokedex.cs" />
+    <Compile Include="PokedexList.cs" />
     <Compile Include="Pokemon.cs" />
     <Compile Include="PokemonPicture.cs">
       <SubType>UserControl</SubType>

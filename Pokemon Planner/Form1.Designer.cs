@@ -44,11 +44,13 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.labelCurrentlySelected = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.treeViewPokedex = new System.Windows.Forms.TreeView();
             this.tabControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPokemonTable)).BeginInit();
             this.flowLayoutPanelSettings.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlMain
@@ -155,6 +157,7 @@
             // 
             this.colLevelRange.HeaderText = "Level Range";
             this.colLevelRange.Name = "colLevelRange";
+            this.colLevelRange.ReadOnly = true;
             this.colLevelRange.Width = 93;
             // 
             // colChance
@@ -209,13 +212,26 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.treeViewPokedex);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(960, 590);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "?";
+            this.tabPage2.Text = "Pokédex";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // treeViewPokedex
+            // 
+            this.treeViewPokedex.CheckBoxes = true;
+            this.treeViewPokedex.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewPokedex.Location = new System.Drawing.Point(3, 3);
+            this.treeViewPokedex.Name = "treeViewPokedex";
+            this.treeViewPokedex.ShowNodeToolTips = true;
+            this.treeViewPokedex.Size = new System.Drawing.Size(954, 584);
+            this.treeViewPokedex.TabIndex = 0;
+            this.treeViewPokedex.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewPokedex_AfterCheck);
+            this.treeViewPokedex.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewPokedex_AfterSelect);
             // 
             // FormMain
             // 
@@ -226,6 +242,7 @@
             this.MinimumSize = new System.Drawing.Size(477, 364);
             this.Name = "FormMain";
             this.Text = "Pokémon Planner";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControlMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -233,6 +250,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPokemonTable)).EndInit();
             this.flowLayoutPanelSettings.ResumeLayout(false);
             this.flowLayoutPanelSettings.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -240,7 +258,6 @@
         #endregion
         private System.Windows.Forms.TabControl tabControlMain;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListBox listBoxLocations;
         private System.Windows.Forms.TextBox textBox1;
@@ -254,6 +271,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colLevelRange;
         private System.Windows.Forms.DataGridViewTextBoxColumn colChance;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCondition;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TreeView treeViewPokedex;
     }
 }
 
