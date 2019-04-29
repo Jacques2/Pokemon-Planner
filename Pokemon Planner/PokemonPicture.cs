@@ -12,6 +12,7 @@ namespace Pokemon_Planner
 {
     public partial class PokemonPicture : UserControl
     {
+        bool disabled = false;
         public PokemonPicture()
         {
             InitializeComponent();
@@ -40,7 +41,17 @@ namespace Pokemon_Planner
 
         public void Deselect()
         {
-            this.BackColor = Color.White;
+            if (!disabled)
+            {
+                this.BackColor = Color.White;
+            }
+        }
+
+        public void Disable()
+        {
+            this.Enabled = false;
+            this.BackColor = SystemColors.ScrollBar;
+            disabled = true;
         }
     }
 }

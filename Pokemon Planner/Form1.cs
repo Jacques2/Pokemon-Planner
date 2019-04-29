@@ -79,37 +79,6 @@ namespace Pokemon_Planner
             return jsonRead;
         }
 
-        /*public void GetLocation(string json)
-        {;
-            dataGridViewPokemonTable.Rows.Clear();
-            var result = JsonConvert.DeserializeObject<Pokemon_Location.RootObject>(json);
-            for (int poke = 0; poke < result.pokemon_encounters.Count; poke++)
-            {
-                for (int version = 0; version < result.pokemon_encounters[poke].version_details.Count; version++)
-                {
-                    string name = result.pokemon_encounters[poke].pokemon.name;
-                    string method = "";
-                    int chance = 0;
-                    for (int encounter = 0; encounter < result.pokemon_encounters[poke].version_details[version].encounter_details.Count; encounter++)
-                    {
-                        if (encounter != 0)
-                        {
-                            method += ", ";
-                        }
-                        method += result.pokemon_encounters[poke].version_details[version].encounter_details[encounter].method.name;
-                        chance += result.pokemon_encounters[poke].version_details[version].encounter_details[encounter].chance;
-                    }
-                    string pVersion = result.pokemon_encounters[poke].version_details[version].version.name;
-                    object conditions = "";
-                    if (result.pokemon_encounters[poke].version_details[version].encounter_details[encounter].condition_values.Count > 0)
-                    {
-                        conditions = result.pokemon_encounters[poke].version_details[version].encounter_details[encounter].condition_values[0];
-                    }
-                    dataGridViewPokemonTable.Rows.Add(name,method,pVersion,chance, conditions.ToString());
-                }
-            }
-        }*/
-
         public void GetPokemon(string json)
         {
             progressBar1.Value = 0;
@@ -149,6 +118,7 @@ namespace Pokemon_Planner
                         }
                     }
                     pokeInfo.Add(new Tuple<string, string, string>(pokeName, imageUrl, pokeTag));
+
                 }
                 progressBar1.Value = poke + 1;
             }
@@ -162,6 +132,13 @@ namespace Pokemon_Planner
                 pp.Click += new System.EventHandler(this.PokemonPicture_Click);
                 pp.Controls[0].Click += new System.EventHandler(this.PokemonPicture_Click);
                 pp.Controls[1].Click += new System.EventHandler(this.PokemonPicture_Click);
+                if (pokedexIndex.ContainsKey(pokeInfo.ElementAt(i).Item3))
+                {
+                    if (pokedex.Contains(Convert.ToString(pokedexIndex[pokeInfo.ElementAt(i).Item3])))
+                    {
+                        pp.Disable();
+                    }
+                }
             }
         }
 
